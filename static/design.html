@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório AI | Design Prototype</title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet" href="/static/design.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dark-theme design-route-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 18h8" />
+                        <path d="M3 22h18" />
+                        <path d="M14 22a7 7 0 1 0 0-14h-1" />
+                        <path d="M9 14h2" />
+                        <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
+                        <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Laboratório AI</span>
+                    <span class="brand-sub">CLASSIFICAÇÃO</span>
+                </div>
+                <!-- Toggle as a chevron in mockup -->
+                <button id="sidebar-toggle" class="sidebar-toggle btn-ghost">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active-nav">
+                    <span>+ Nova Análise</span>
+                </button>
+                <button class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span>Pastas</span>
+                </button>
+                <button class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6" />
+                    </svg>
+                    <span>Métricas</span>
+                </button>
+                <button class="nav-item">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span>Histórico</span>
+                </button>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar">BD</div>
+                <div class="user-info">
+                    <span class="user-name">Bob Dylan</span>
+                </div>
+                <button class="settings-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content (Design Prototype) -->
+        <main class="main-content">
+            <header class="design-header">
+                <h2>Configure a nova análise</h2>
+                <p>ajuste os parâmetros abaixo e anexe as amostras<br>para que a I.A. analise e classifique</p>
+            </header>
+
+            <div class="design-card">
+                <div class="design-card-left">
+                    <div class="design-inputs">
+                        <div class="input-group">
+                            <label>Identificação da Análise</label>
+                            <input type="text" placeholder="Ex: André - 23/11/26">
+                        </div>
+
+                        <div class="input-group">
+                            <label>Pasta</label>
+                            <div class="mock-folder-select">
+                                <span class="mock-folder-text">Crioprotetor 01 &rsaquo;</span>
+                                <div class="mock-toggle">
+                                    <div class="mock-toggle-knob"></div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="input-group">
+                            <label>Tipo de Processamento</label>
+                            <select>
+                                <option>Classificação e Contagem</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="design-action-container">
+                        <button class="btn-sparkle">
+                            Ver Resultados ✨
+                        </button>
+                    </div>
+                </div>
+
+                <div class="design-card-right">
+                    <div class="mock-upload-header">Upload de Amostras</div>
+                    <div class="upload-zone dashed-zone">
+                        <div class="upload-placeholder">
+                            <div class="upload-icon">
+                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                    <polyline points="17 8 12 3 7 8" />
+                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                </svg>
+                            </div>
+                            <p><strong>arraste e solte</strong></p>
+                            <p>ou <span style="color:var(--primary); text-decoration:underline;">clique</span> para
+                                selecionar arquivos</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bottom Nav (Mockup Style) -->
+            <div class="design-bottom-nav">
+                <div class="nav-card active">
+                    <div class="nav-card-info">
+                        <h4>Nova<br>Análise</h4>
+                    </div>
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:24px; height:24px;">
+                            <path d="M6 18h8" />
+                            <path d="M3 22h18" />
+                            <path d="M14 22a7 7 0 1 0 0-14h-1" />
+                            <path d="M9 14h2" />
+                            <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
+                            <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="nav-card">
+                    <div class="nav-card-info">
+                        <h4>Historico</h4>
+                    </div>
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:24px; height:24px;">
+                            <circle cx="12" cy="12" r="10" />
+                            <polyline points="12 6 12 12 16 14" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="nav-card">
+                    <div class="nav-card-info">
+                        <h4>Pastas</h4>
+                    </div>
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:24px; height:24px;">
+                            <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                        </svg>
+                    </div>
+                </div>
+                <div class="nav-card">
+                    <div class="nav-card-info">
+                        <h4>Ver Métricas</h4>
+                    </div>
+                    <div class="nav-card-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            style="width:24px; height:24px;">
+                            <polyline points="22 12 18 12 15 21 9 3 6 12 2 12" />
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Laboratório AI | Classificação</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 18h8" />
+                        <path d="M3 22h18" />
+                        <path d="M14 22a7 7 0 1 0 0-14h-1" />
+                        <path d="M9 14h2" />
+                        <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
+                        <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Laboratório AI</span>
+                    <span class="brand-sub">CLASSIFICAÇÃO</span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="analysis">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    <span>Nova Análise</span>
+                </button>
+                <button class="nav-item" data-view="folders">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span>Pastas</span>
+                </button>
+                <button class="nav-item" data-view="metrics">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6" />
+                    </svg>
+                    <span>Métricas</span>
+                </button>
+                <button class="nav-item" data-view="history">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="10" />
+                        <polyline points="12 6 12 12 16 14" />
+                    </svg>
+                    <span>Histórico</span>
+                </button>
+            </nav>
+
+            <div class="user-profile">
+                <div class="avatar">BD</div>
+                <div class="user-info">
+                    <span class="user-name">Bob Dylan</span>
+                </div>
+                <button class="settings-btn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="12" cy="12" r="3" />
+                        <path
+                            d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z" />
+                    </svg>
+                </button>
+            </div>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Nova Análise View -->
+            <section id="view-analysis" class="view">
+                <header class="view-header">
+                    <h2 id="analysis-view-title">Configure a nova análise</h2>
+                    <p id="analysis-view-desc">ajuste os parâmetros abaixo e anexe as amostras para que a I.A. analise e
+                        classifique</p>
+                </header>
+
+                <div id="analysis-config-container">
+                    <div class="analysis-card">
+                        <div class="card-grid">
+                            <div class="form-inputs">
+                                <div class="input-group">
+                                    <label>Identificação da Análise</label>
+                                    <input type="text" id="analysis-name" placeholder="Ex: André - 23/11/26">
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Pasta</label>
+                                    <div class="folder-selector-container">
+                                        <select id="analysis-folder-select" class="folder-select">
+                                            <option value="">Selecione uma pasta</option>
+                                        </select>
+                                        <button id="open-new-folder-modal" class="btn-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 5v14M5 12h14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Modelo YOLO</label>
+                                    <select id="active-model-select">
+                                        <option value="">Selecione um modelo</option>
+                                    </select>
+                                </div>
+
+                                <div class="analysis-actions">
+                                    <button id="start-analysis-btn" class="btn-primary">
+                                        Iniciar análise <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="upload-zone" id="drop-area">
+                                <input type="file" id="image-input" accept="image/*" multiple hidden>
+                                <div class="upload-placeholder" id="upload-placeholder">
+                                    <div class="upload-icon">
+                                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                            <polyline points="17 8 12 3 7 8" />
+                                            <line x1="12" y1="3" x2="12" y2="15" />
+                                        </svg>
+                                    </div>
+                                    <p><strong>arraste e solte</strong></p>
+                                    <p>ou <span>clique</span> para selecionar arquivos</p>
+                                </div>
+                                <div class="preview-container hidden" id="preview-container">
+                                    <img id="image-preview">
+                                    <div id="file-badge" class="file-badge hidden"></div>
+                                    <button id="remove-image" class="btn-remove">×</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ready State (Hidden by default) -->
+                <div id="analysis-ready-container" class="hidden">
+                    <div class="analysis-card ready-state-card">
+                        <div class="card-grid ready-card-grid">
+                            <!-- Left panel (Properties) -->
+                            <div class="ready-properties-panel">
+                                <h3>Propriedades</h3>
+                                <div class="prop-list">
+                                    <div class="prop-group">
+                                        <label>Identificação da Análise</label>
+                                        <span id="ready-prop-name">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Pasta</label>
+                                        <span id="ready-prop-folder">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Modelo de I.A.</label>
+                                        <span id="ready-prop-model">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Data</label>
+                                        <span id="ready-prop-date">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right panel (Upload preview zone) -->
+                            <div class="upload-zone ready-preview-zone">
+                                <div class="ready-zone-header">Upload de Amostras</div>
+
+                                <div class="ready-bg-grid" id="ready-bg-grid">
+                                    <!-- blurred images will be injected here -->
+                                </div>
+
+                                <div class="ready-overlay-content">
+                                    <h3>Clique para ver os resultados</h3>
+                                    <button id="ready-view-results" class="btn-primary btn-success ready-btn-pulse">
+                                        Ver Resultados <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results-container" class="results-container hidden">
+                    <!-- Cards de resultados serão injetados aqui -->
+                </div>
+            </section>
+
+            <!-- Pastas View -->
+            <section id="view-folders" class="view hidden">
+                <header class="view-header">
+                    <h2>Gerencie suas Pastas</h2>
+                    <p>crie, altere ou exclua seus agrupamentos</p>
+                </header>
+
+                <div class="folders-grid" id="folders-container">
+                    <!-- Cards de pastas injetados aqui -->
+                    <div class="add-folder-card" id="add-folder-btn-card">
+                        <div class="btn-create">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                        </div>
+                        <span>Criar Nova Pasta</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metrics View -->
+            <section id="view-metrics" class="view hidden">
+                <header class="view-header">
+                    <h2>Métricas e Estatísticas</h2>
+                    <p>confira os dados de desempenho e consumo</p>
+                </header>
+
+                <div class="metrics-config">
+                    <div class="input-group">
+                        <label>Selecione a Pasta</label>
+                        <select id="metrics-folder-select" class="folder-select">
+                            <option value="">Selecione uma pasta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="metrics-dashboard" class="metrics-dashboard hidden">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">📸</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total de Imagens</span>
+                                <span id="m-total-images" class="metric-value">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">🎯</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total de Detecções</span>
+                                <span id="m-total-det" class="metric-value">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">💎</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Confiança Média</span>
+                                <span id="m-avg-conf" class="metric-value">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-card">
+                        <h3>Distribuição de Classes</h3>
+                        <div id="m-distribution-container" class="dist-container">
+                            <!-- Barras de progresso serão injetadas aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+            <section id="view-history" class="view hidden">
+                <div class="placeholder-view">Histórico de análises estará disponível em breve.</div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div id="new-folder-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Nova Pasta</h3>
+            <input type="text" id="new-folder-name" placeholder="Nome da pasta">
+            <div class="modal-actions">
+                <button id="cancel-folder-btn" class="btn-secondary">Cancelar</button>
+                <button id="save-folder-btn" class="btn-primary">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Lightbox Redesenhado (Split View) -->
+    <div id="lightbox-modal" class="lightbox-modal hidden">
+        <div class="lightbox-split">
+            <!-- Lateral esquerda: Informações -->
+            <aside class="lightbox-sidebar">
+                <div class="lightbox-header">
+                    <span class="img-counter" id="lb-counter">1 de 1</span>
+                    <button class="lightbox-close">×</button>
+                </div>
+
+                <div class="stats-group">
+                    <label>Modelo Utilizado</label>
+                    <div id="lb-model-name" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-group">
+                    <label>Confiança Média</label>
+                    <div id="lb-confidence" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-group">
+                    <label>Total de Detecções</label>
+                    <div id="lb-total" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-divider"></div>
+
+                <div class="stats-group">
+                    <label>Distribuição de Classes</label>
+                    <div id="lb-classes-list" class="classes-list">
+                        <!-- Itens como % serão injetados aqui -->
+                    </div>
+                </div>
+
+                <div class="lightbox-nav">
+                    <button id="lb-prev" class="btn-nav">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                    </button>
+                    <button id="lb-next" class="btn-nav">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Área principal: Imagem -->
+            <div class="lightbox-main">
+                <div class="img-zoom-container">
+                    <img id="lightbox-img" src="" alt="Zoom da análise">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

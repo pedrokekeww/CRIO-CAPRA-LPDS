@@ -1,0 +1,15 @@
+# ambiente python
+.venv/
+venv/
+venv
+.venv
+.env
+env
+# cache python
+__pycache__/
+*.pyc
+
+# arquivos do sistema
+.env
+yolo_app.db
+*.db
