@@ -1,0 +1,472 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - Gerenciar Modelos | CRIO-CAPRA</title>
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg: #121212;
+            --surface: #1e1e1e;
+            --surface-hover: #2d2d2d;
+            --primary: #77b2ff;
+            --primary-hover: #5a9cf0;
+            --danger: #ef4444;
+            --text-main: #ffffff;
+            --text-dim: #a0a0a0;
+            --border: #333333;
+            --radius: 8px;
+            --transition: all 0.2s ease;
+            --font: 'Inter', -apple-system, sans-serif;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: var(--font);
+            background: var(--bg);
+            color: var(--text-main);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hidden { display: none !important; }
+
+        /* Auth Screen */
+        #auth-screen {
+            text-align: center;
+            background: var(--surface);
+            padding: 40px;
+            border-radius: var(--radius);
+            border: 1px solid var(--border);
+            box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+            transition: var(--transition);
+        }
+
+        #auth-screen h1 {
+            margin: 0 0 8px 0;
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        #auth-screen p {
+            color: var(--text-dim);
+            font-size: 14px;
+            margin: 0 0 24px 0;
+        }
+
+        .pin-input {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            margin-bottom: 24px;
+        }
+
+        .pin-digit {
+            width: 50px;
+            height: 60px;
+            border-radius: 8px;
+            border: 2px solid var(--border);
+            background: var(--bg);
+            color: white;
+            font-size: 24px;
+            text-align: center;
+            font-weight: bold;
+            transition: var(--transition);
+        }
+
+        .pin-digit:focus {
+            border-color: var(--primary);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(119, 178, 255, 0.2);
+        }
+
+        .error-msg {
+            color: var(--danger);
+            min-height: 20px;
+            margin-bottom: 16px;
+            font-size: 13px;
+        }
+
+        /* Dashboard Screen */
+        #dashboard-screen {
+            width: 100%;
+            max-width: 1000px;
+            padding: 40px;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            flex-grow: 1;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 32px;
+            border-bottom: 1px solid var(--border);
+            padding-bottom: 20px;
+        }
+
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 600;
+        }
+
+        .btn {
+            background: var(--surface);
+            color: var(--text-main);
+            border: 1px solid var(--border);
+            padding: 10px 16px;
+            border-radius: var(--radius);
+            cursor: pointer;
+            font-size: 14px;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            font-family: var(--font);
+            text-decoration: none;
+        }
+
+        .btn:hover { background: var(--surface-hover); }
+
+        .btn-primary {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+            font-weight: 500;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            border-color: var(--primary-hover);
+        }
+
+        .btn-danger {
+            color: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: rgba(239, 68, 68, 0.1);
+            border-color: var(--danger);
+        }
+
+        /* Layout Grid */
+        .layout {
+            display: grid;
+            grid-template-columns: 350px 1fr;
+            gap: 32px;
+            align-items: start;
+        }
+
+        /* Form Card */
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 24px;
+        }
+
+        .card h2 {
+            margin-top: 0;
+            margin-bottom: 24px;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .form-group { margin-bottom: 16px; }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 13px;
+            color: var(--text-dim);
+            font-weight: 500;
+        }
+
+        .form-input {
+            width: 100%;
+            box-sizing: border-box;
+            padding: 12px 14px;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg);
+            color: var(--text-main);
+            font-family: var(--font);
+            font-size: 14px;
+            transition: var(--transition);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 2px rgba(119, 178, 255, 0.1);
+        }
+
+        /* Model List */
+        .model-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .model-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: var(--radius);
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: var(--transition);
+        }
+
+        .model-item:hover {
+            border-color: var(--primary);
+        }
+
+        .model-info h3 {
+            margin: 0 0 6px 0;
+            font-size: 16px;
+            font-weight: 600;
+        }
+
+        .model-info p {
+            margin: 0 0 4px 0;
+            font-size: 13px;
+            color: var(--text-dim);
+        }
+        
+        .badge {
+            display: inline-block;
+            background: rgba(119, 178, 255, 0.15);
+            color: var(--primary);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-family: monospace;
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        /* Responsive Breakpoint */
+        @media (max-width: 768px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Auth Screen -->
+    <div id="auth-screen">
+        <h1>Acesso Restrito</h1>
+        <p>Insira a credencial administrativa</p>
+        <div class="pin-input">
+            <input type="password" class="pin-digit" maxlength="1" id="pin-1" autocomplete="off">
+            <input type="password" class="pin-digit" maxlength="1" id="pin-2" autocomplete="off">
+            <input type="password" class="pin-digit" maxlength="1" id="pin-3" autocomplete="off">
+            <input type="password" class="pin-digit" maxlength="1" id="pin-4" autocomplete="off">
+        </div>
+        <div class="error-msg" id="pin-error"></div>
+        <button class="btn btn-primary" id="btn-login" style="width: 100%;">Acessar Painel</button>
+    </div>
+
+    <!-- Dashboard Screen -->
+    <div id="dashboard-screen" class="hidden">
+        <div class="header">
+            <h1>Configurações do Sistema</h1>
+            <a href="/" class="btn">
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                Voltar
+            </a>
+        </div>
+        
+        <div class="layout">
+            <div class="card">
+                <h2>Adicionar Modelo</h2>
+                <form id="add-model-form">
+                    <div class="form-group">
+                        <label class="form-label" for="model-name">Nome de Exibição</label>
+                        <input type="text" class="form-input" id="model-name" required placeholder="Ex: YOLOv8 - Caprinos">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="model-id">Roboflow Model ID</label>
+                        <input type="text" class="form-input" id="model-id" required placeholder="Ex: projeto-b2x/1">
+                    </div>
+                    <div class="form-group">
+                        <label class="form-label" for="model-api">Roboflow API Key</label>
+                        <input type="password" class="form-input" id="model-api" required placeholder="Chave secreta">
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 8px;">Salvar Modelo</button>
+                </form>
+            </div>
+            
+            <div class="card">
+                <h2>Modelos Ativos</h2>
+                <div class="model-list" id="models-list">
+                    <!-- Registros injetados aqui -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Auth Logic ---
+        const pinInputs = document.querySelectorAll('.pin-digit');
+        const btnLogin = document.getElementById('btn-login');
+        const pinError = document.getElementById('pin-error');
+        const authScreen = document.getElementById('auth-screen');
+        const dashboardScreen = document.getElementById('dashboard-screen');
+        const CORRECT_PIN = "1119";
+
+        // Auto focus for modern user experience
+        pinInputs.forEach((input, index) => {
+            input.addEventListener('input', (e) => {
+                if(e.target.value.length === 1 && index < pinInputs.length - 1) {
+                    pinInputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if(e.key === 'Backspace' && e.target.value === '' && index > 0) {
+                    pinInputs[index - 1].focus();
+                }
+                if(e.key === 'Enter') {
+                    attemptLogin();
+                }
+            });
+        });
+
+        btnLogin.addEventListener('click', attemptLogin);
+
+        function attemptLogin() {
+            let pin = '';
+            pinInputs.forEach(i => pin += i.value);
+            
+            if(pin === CORRECT_PIN) {
+                authScreen.classList.add('hidden');
+                document.body.style.display = 'block'; 
+                dashboardScreen.classList.remove('hidden');
+                pinError.textContent = '';
+                loadModels();
+            } else {
+                pinError.textContent = 'Credenciais incorretas.';
+                pinInputs.forEach(i => i.value = '');
+                pinInputs[0].focus();
+                
+                // Shake 
+                authScreen.style.transform = 'translateX(10px)';
+                setTimeout(() => authScreen.style.transform = 'translateX(-10px)', 50);
+                setTimeout(() => authScreen.style.transform = 'translateX(0)', 100);
+            }
+        }
+
+        // --- CRUD Logic ---
+        const modelsListDiv = document.getElementById('models-list');
+        const addModelForm = document.getElementById('add-model-form');
+
+        async function loadModels() {
+            modelsListDiv.innerHTML = '<div style="color: var(--text-dim); text-align: center; padding: 20px;">Carregando modelos...</div>';
+            try {
+                const res = await fetch('/models/');
+                if(!res.ok) throw new Error('Falha ao buscar modelos na API');
+                const models = await res.json();
+                renderModels(models);
+            } catch(e) {
+                modelsListDiv.innerHTML = '<div style="color: var(--danger); text-align: center; padding: 20px;">Erro de conexão com servidor.</div>';
+                console.error(e);
+            }
+        }
+
+        function renderModels(models) {
+            modelsListDiv.innerHTML = '';
+            if(models.length === 0) {
+                modelsListDiv.innerHTML = '<div style="color: var(--text-dim); text-align: center; padding: 20px; border: 1px dashed var(--border); border-radius: var(--radius);">Nenhum modelo cadastrado no sistema.</div>';
+                return;
+            }
+
+            models.forEach(m => {
+                const item = document.createElement('div');
+                item.className = 'model-item';
+                
+                // Mask the critical API Key
+                const maskedApi = m.api_key ? '••••' + m.api_key.slice(-4) : 'Ausente';
+                
+                item.innerHTML = `
+                    <div class="model-info">
+                        <h3>${m.name}</h3>
+                        <p>ID: <span class="badge">${m.model_id}</span></p>
+                        <p>CHAVE REF: ${maskedApi}</p>
+                    </div>
+                    <button class="btn btn-danger" onclick="deleteModel(${m.id})">
+                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/></svg>
+                        Remover
+                    </button>
+                `;
+                modelsListDiv.appendChild(item);
+            });
+        }
+
+        addModelForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = addModelForm.querySelector('button[type="submit"]');
+            
+            const name = document.getElementById('model-name').value;
+            const modelId = document.getElementById('model-id').value;
+            const api = document.getElementById('model-api').value;
+
+            btn.disabled = true;
+            btn.textContent = 'Salvando...';
+
+            try {
+                const res = await fetch('/models/', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name: name, model_id: modelId, api_key: api })
+                });
+
+                if(res.ok) {
+                    addModelForm.reset();
+                    await loadModels();
+                } else {
+                    alert("Erro ao adicionar modelo. Verifique console.");
+                }
+            } catch(e) {
+                console.error("Erro adicionando modelo", e);
+                alert("Erro de servidor.");
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Salvar Modelo';
+            }
+        });
+
+        window.deleteModel = async function(id) {
+            if(!confirm("Ação destrutiva:\nTem certeza que deseja excluir esta configuração? Interromperá futuras inferências que dependem deste modelo.")) return;
+            
+            try {
+                const res = await fetch('/models/' + id, { method: 'DELETE' });
+                if(res.ok) {
+                    await loadModels();
+                } else {
+                    alert("Falha na exclusão!");
+                }
+            } catch(e) {
+                console.error("Erro excluindo", e);
+                alert("Erro de conexão.");
+            }
+        }
+    </script>
+</body>
+</html>

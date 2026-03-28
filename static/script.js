@@ -10,6 +10,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const activeModelSelect = document.getElementById('active-model-select');
     const startAnalysisBtn = document.getElementById('start-analysis-btn');
 
+    // Folder Details Elements
+    const fdBackBtn = document.getElementById('fd-back-btn');
+    const fdTitleName = document.getElementById('fd-title-name');
+    const fdBreadcrumbName = document.getElementById('fd-breadcrumb-name');
+    const fdSamplesCount = document.getElementById('fd-samples-count');
+    const fdGalleryGrid = document.getElementById('fd-gallery-grid');
+    const fdAddSamplesBtn = document.getElementById('fd-add-samples-btn');
+    const fdSearchInput = document.getElementById('fd-search-input');
+    const btnMultiDelete = document.getElementById('btn-multi-delete');
+
     const dropArea = document.getElementById('drop-area');
     const imageInput = document.getElementById('image-input');
     const uploadPlaceholder = document.getElementById('upload-placeholder');
@@ -114,6 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const card = document.createElement('div');
             card.className = 'folder-card';
             card.innerHTML = `
+                <button class="btn-edit-folder" title="Renomear Pasta" data-id="${folder.id}">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 20h9"></path>
+                        <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
+                    </svg>
+                </button>
                 <button class="btn-delete-folder" title="Excluir Pasta" data-id="${folder.id}">
                     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
@@ -135,10 +151,38 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div class="updated-date">Atualizado: ${new Date(folder.created_at).toLocaleDateString()}</div>
             `;
 
+            // Rename click
+            card.querySelector('.btn-edit-folder').addEventListener('click', async (e) => {
+                e.stopPropagation();
+                const newName = prompt(`Digite o novo nome para a pasta "${folder.name}":`, folder.name);
+                if (newName !== null && newName.trim() !== '') {
+                    try {
+                        const res = await fetch(`/folders/${folder.id}`, {
+                            method: 'PUT',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ name: newName.trim() })
+                        });
+                        if (res.ok) {
+                            loadFolders();
+                        } else {
+                            alert("Erro ao renomear pasta.");
+                        }
+                    } catch (err) {
+                        console.error("Erro renomeando", err);
+                    }
+                }
+            });
+
             // Delete click
             card.querySelector('.btn-delete-folder').addEventListener('click', (e) => {
                 e.stopPropagation();
                 deleteFolder(folder.id, folder.name);
+            });
+
+            card.addEventListener('click', () => {
+                if(window.openFolderDetails) {
+                    window.openFolderDetails(folder.id, folder.name, folder.analysis_count);
+                }
             });
 
             foldersContainer.insertBefore(card, addFolderBtnCard);
@@ -537,6 +581,335 @@ document.addEventListener('DOMContentLoaded', () => {
             switchView(view);
         });
     });
+
+    // --- Folder Details Logic ---
+    let currentFolderDetailsId = null;
+    let folderAnalyses = [];
+    let currentFolderViewAnalyses = [];
+
+    if(fdBackBtn) {
+        fdBackBtn.addEventListener('click', () => {
+            switchView('folders');
+            currentFolderDetailsId = null;
+        });
+    }
+
+    window.openFolderDetails = async function(folderId, folderName, analysisCount) {
+        currentFolderDetailsId = folderId;
+        fdTitleName.textContent = folderName;
+        fdBreadcrumbName.textContent = folderName;
+        fdSamplesCount.textContent = `${analysisCount || 0} AMOSTRAS`;
+        
+        switchView('folder-details');
+        fdGalleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">Carregando imagens...</div>';
+        
+        try {
+            const res = await fetch(`/folders/${folderId}/analyses`);
+            if (res.ok) {
+                folderAnalyses = await res.json();
+                fdSamplesCount.textContent = `${folderAnalyses.length} AMOSTRAS`;
+                
+                // Reset tabs to default (Amostras)
+                const amostrasTab = document.querySelector('.fd-tab[data-tab="amostras"]');
+                if(amostrasTab) amostrasTab.click();
+                if(fdSearchInput) fdSearchInput.value = '';
+
+                renderFolderGallery(folderAnalyses);
+                if(window.renderAmostrasList) window.renderAmostrasList(folderAnalyses);
+            } else {
+                fdGalleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger); padding: 40px;">Erro ao carregar imagens.</div>';
+            }
+        } catch (err) {
+            console.error("Erro ao puxar analyses da pasta", err);
+            fdGalleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--danger); padding: 40px;">Erro de conexão.</div>';
+        }
+    }
+
+    function renderFolderGallery(analyses) {
+        currentFolderViewAnalyses = analyses;
+        fdGalleryGrid.innerHTML = '';
+        if (analyses.length === 0) {
+            fdGalleryGrid.innerHTML = '<div style="grid-column: 1/-1; text-align: center; color: var(--text-dim); padding: 40px;">Nenhuma imagem nesta pasta.</div>';
+            return;
+        }
+
+        analyses.forEach((analysis, index) => {
+            const card = document.createElement('div');
+            card.className = 'fd-item-card';
+            
+            card.innerHTML = `
+                <img src="${analysis.image_url}" alt="${analysis.name}">
+                <div class="fd-item-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"></path></svg>
+                </div>
+                <div class="fd-item-overlay">
+                    <div class="fd-item-title">${analysis.name}</div>
+                    <div class="fd-item-actions">
+                        <button class="fd-item-btn" title="Expandir" onclick="event.stopPropagation(); window.openFolderLightbox(${index})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="15 3 21 3 21 9"></polyline>
+                                <polyline points="9 21 3 21 3 15"></polyline>
+                                <line x1="21" y1="3" x2="14" y2="10"></line>
+                                <line x1="3" y1="21" x2="10" y2="14"></line>
+                            </svg>
+                        </button>
+                        <button class="fd-item-btn btn-danger" title="Excluir" onclick="event.stopPropagation(); window.deleteAnalysis(${analysis.id})">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            if (window.selectedForDelete && window.selectedForDelete.has(analysis.id)) {
+                card.classList.add('selected-for-delete');
+            }
+
+            card.onclick = (e) => {
+                e.stopPropagation();
+                if (window.selectedForDelete.has(analysis.id)) {
+                    window.selectedForDelete.delete(analysis.id);
+                    card.classList.remove('selected-for-delete');
+                } else {
+                    window.selectedForDelete.add(analysis.id);
+                    card.classList.add('selected-for-delete');
+                }
+                if(window.updateMultiDeleteButtonState) window.updateMultiDeleteButtonState();
+            };
+
+            fdGalleryGrid.appendChild(card);
+        });
+    }
+
+    if(fdSearchInput) {
+        fdSearchInput.addEventListener('input', (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = folderAnalyses.filter(a => a.name.toLowerCase().includes(term));
+            
+            // Re-render whatever view is active
+            renderFolderGallery(filtered);
+            if(window.renderAmostrasList) window.renderAmostrasList(filtered);
+        });
+    }
+    
+    // --- Tabs Logic ---
+    const fdTabs = document.querySelectorAll('#fd-tabs .fd-tab');
+    const fdAmostrasContainer = document.getElementById('fd-amostras-container');
+    const fdGalleryContainer = document.getElementById('fd-gallery-container');
+
+    if(fdTabs.length > 0) {
+        fdTabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                fdTabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                if (tab.dataset.tab === 'amostras') {
+                    fdAmostrasContainer.classList.remove('hidden');
+                    fdGalleryContainer.classList.add('hidden');
+                } else {
+                    fdAmostrasContainer.classList.add('hidden');
+                    fdGalleryContainer.classList.remove('hidden');
+                }
+            });
+        });
+    }
+
+    window.renderAmostrasList = function(analyses) {
+        const listContainer = document.getElementById('fd-amostras-list');
+        if(!listContainer) return;
+        
+        listContainer.innerHTML = '';
+        
+        if (analyses.length === 0) {
+            listContainer.innerHTML = '<div style="color: var(--text-dim); padding: 20px 0;">Nenhuma amostra registrada.</div>';
+            return;
+        }
+
+        const groups = {};
+        analyses.forEach(a => {
+            // "nome da analise (1)" -> "nome da analise"
+            const baseName = a.name.replace(/\s\(\d+\)$/, '').trim();
+            if (!groups[baseName]) {
+                groups[baseName] = {
+                    name: baseName,
+                    count: 0,
+                    ids: [],
+                    date: a.created_at || new Date().toISOString()
+                };
+            }
+            groups[baseName].count++;
+            groups[baseName].ids.push(a.id);
+        });
+
+        Object.values(groups).forEach(group => {
+            const dateObj = new Date(group.date);
+            const dateStr = dateObj.toLocaleDateString('pt-BR', { day: '2-digit', month: 'short', year: 'numeric' });
+            
+            const row = document.createElement('div');
+            row.className = 'fd-amostra-row';
+            
+            if (group.ids.every(id => window.selectedForDelete && window.selectedForDelete.has(id))) {
+                row.classList.add('selected-for-delete');
+            }
+
+            row.innerHTML = `
+                <div class="fd-amostra-checkbox">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="M20 6L9 17l-5-5"></path></svg>
+                </div>
+                <div class="fd-amostra-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M10 2v7.31"></path>
+                        <path d="M14 9.3V1.99"></path>
+                        <path d="M8.5 2h7"></path>
+                        <path d="M14 9.3a6.5 6.5 0 1 1-4 0"></path>
+                        <path d="M5.52 16h12.96"></path>
+                    </svg>
+                </div>
+                <div class="fd-amostra-details">
+                    <div class="fd-amostra-title">${group.name}</div>
+                    <div class="fd-amostra-meta">
+                        <div class="fd-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                            ${dateStr}
+                        </div>
+                        <div class="fd-meta-item">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                            ${group.count} imagens anexadas a essa análise
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            const checkboxDiv = row.querySelector('.fd-amostra-checkbox');
+            if (checkboxDiv) {
+                checkboxDiv.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const currentlySelected = group.ids.every(id => window.selectedForDelete && window.selectedForDelete.has(id));
+                    if (currentlySelected) {
+                        group.ids.forEach(id => window.selectedForDelete.delete(id));
+                        row.classList.remove('selected-for-delete');
+                    } else {
+                        group.ids.forEach(id => window.selectedForDelete.add(id));
+                        row.classList.add('selected-for-delete');
+                    }
+                    if(window.updateMultiDeleteButtonState) window.updateMultiDeleteButtonState();
+                });
+            }
+
+            row.addEventListener('click', () => {
+                // Switch to Imagens tab and filter by name
+                const imagensTab = document.querySelector('.fd-tab[data-tab="imagens"]');
+                if(imagensTab) imagensTab.click();
+                
+                if(fdSearchInput) {
+                    fdSearchInput.value = group.name;
+                    fdSearchInput.dispatchEvent(new Event('input', { bubbles: true }));
+                }
+            });
+
+            listContainer.appendChild(row);
+        });
+    }
+
+    if(fdAddSamplesBtn) {
+        fdAddSamplesBtn.addEventListener('click', () => {
+             switchView('analysis');
+             if(analysisFolderSelect && currentFolderDetailsId) {
+                 analysisFolderSelect.value = currentFolderDetailsId;
+             }
+        });
+    }
+
+    window.openFolderLightbox = function(index) {
+        if (!currentFolderViewAnalyses || currentFolderViewAnalyses.length === 0) return;
+        
+        currentResults = currentFolderViewAnalyses.map(a => {
+            const parsedMeta = a.results_json ? JSON.parse(a.results_json) : {};
+            return {
+                id: a.id,
+                image: a.image_url,
+                metadata: {
+                    model_name: parsedMeta.model_name || 'Desconhecido',
+                    detections_count: a.detections || 0,
+                    classes: parsedMeta.classes || [],
+                    confidences: parsedMeta.confidences || []
+                }
+            };
+        });
+        
+        currentLbIndex = index;
+        updateLightboxContent();
+        lightboxModal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+    }
+
+    window.deleteAnalysis = async function(id) {
+         if(!confirm("Atenção: Ação irreversível!\nTem certeza absoluta que deseja excluir esta análise?")) return;
+         
+         try {
+             const res = await fetch(`/analyses/${id}`, { method: 'DELETE' });
+             if (res.ok) {
+                 if(currentFolderDetailsId) {
+                     // Get current count and subtract 1
+                     const currentCount = parseInt(fdSamplesCount.textContent.replace(/\D/g, '')) || 0;
+                     const newCount = Math.max(0, currentCount - 1);
+                     window.openFolderDetails(currentFolderDetailsId, fdTitleName.textContent, newCount);
+                 }
+             } else {
+                 alert("Erro ao excluir análise do servidor.");
+             }
+         } catch(e) {
+             console.error("Erro deletando análise:", e);
+         }
+    }
+
+    window.selectedForDelete = new Set();
+    
+    window.updateMultiDeleteButtonState = function() {
+        const btn = document.getElementById('btn-multi-delete');
+        if(!btn) return;
+        
+        if (window.selectedForDelete && window.selectedForDelete.size > 0) {
+            btn.classList.add('active-danger');
+            btn.style.opacity = '1';
+            btn.style.pointerEvents = 'auto';
+        } else {
+            btn.classList.remove('active-danger');
+            btn.style.opacity = '0.3';
+            btn.style.pointerEvents = 'none';
+        }
+    };
+
+    if(btnMultiDelete) {
+        // Initial state
+        window.updateMultiDeleteButtonState();
+        
+        btnMultiDelete.addEventListener('click', async () => {
+            if(window.selectedForDelete && window.selectedForDelete.size > 0) {
+                if(confirm(`Tem certeza absoluta que deseja excluir as ${window.selectedForDelete.size} imagens selecionadas?\nEsta ação é irreversível.`)) {
+                    let deletedCount = 0;
+                    for(const id of window.selectedForDelete) {
+                        try {
+                            const res = await fetch(`/analyses/${id}`, { method: 'DELETE' });
+                            if(res.ok) deletedCount++;
+                        } catch(e) {
+                            console.error("Error deleting", id, e);
+                        }
+                    }
+                    
+                    // Reload data
+                    if(currentFolderDetailsId) {
+                        const currentCount = parseInt(fdSamplesCount.textContent.replace(/\D/g, '')) || 0;
+                        const newCount = Math.max(0, currentCount - deletedCount);
+                        window.selectedForDelete.clear();
+                        window.updateMultiDeleteButtonState();
+                        window.openFolderDetails(currentFolderDetailsId, fdTitleName.textContent, newCount);
+                    }
+                }
+            }
+        });
+    }
 
     // Initial Load
     switchView('analysis');

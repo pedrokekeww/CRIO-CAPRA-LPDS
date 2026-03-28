@@ -1,5 +1,6 @@
 import shutil
 import os
+import uuid
 import cv2
 import numpy as np
 import base64
@@ -19,6 +20,7 @@ app = FastAPI(title="YOLO Inference Manager")
 
 # Ensure static directory exists
 os.makedirs("static", exist_ok=True)
+os.makedirs(os.path.join("static", "uploads"), exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Dependency
@@ -56,6 +58,16 @@ def delete_model(model_id: int, db: Session = Depends(get_db)):
 def create_folder(folder: schemas.FolderCreate, db: Session = Depends(get_db)):
     db_folder = database.Folder(name=folder.name)
     db.add(db_folder)
+    db.commit()
+    db.refresh(db_folder)
+    return db_folder
+
+@app.put("/folders/{folder_id}", response_model=schemas.Folder)
+def update_folder(folder_id: int, folder: schemas.FolderCreate, db: Session = Depends(get_db)):
+    db_folder = db.query(database.Folder).filter(database.Folder.id == folder_id).first()
+    if not db_folder:
+        raise HTTPException(status_code=404, detail="Folder not found")
+    db_folder.name = folder.name
     db.commit()
     db.refresh(db_folder)
     return db_folder
@@ -112,10 +124,12 @@ async def analyze_image(
     annotated_image = box_annotator.annotate(scene=image.copy(), detections=detections)
     annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
 
-    # 5. Convert to base64
-    _, buffer = cv2.imencode('.jpg', annotated_image)
-    image_base64 = base64.b64encode(buffer).decode('utf-8')
-    image_url = f"data:image/jpeg;base64,{image_base64}"
+    # 5. Save annotated image locally
+    file_id = str(uuid.uuid4())
+    filename = f"{file_id}.jpg"
+    filepath = os.path.join("static", "uploads", filename)
+    cv2.imwrite(filepath, annotated_image)
+    image_url = f"/static/uploads/{filename}"
 
     # 6. Prepare metadata for frontend
     class_names = [p.class_name for p in results.predictions]
@@ -190,6 +204,24 @@ def get_folder_metrics(folder_id: int, db: Session = Depends(get_db)):
 def read_folder_analyses(folder_id: int, db: Session = Depends(get_db)):
     return db.query(database.Analysis).filter(database.Analysis.folder_id == folder_id).all()
 
+@app.delete("/analyses/{analysis_id}")
+def delete_analysis(analysis_id: int, db: Session = Depends(get_db)):
+    db_analysis = db.query(database.Analysis).filter(database.Analysis.id == analysis_id).first()
+    if not db_analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+    
+    if db_analysis.image_url and db_analysis.image_url.startswith("/static/uploads/"):
+        filepath = "." + db_analysis.image_url
+        try:
+            if os.path.exists(filepath):
+                os.remove(filepath)
+        except Exception:
+            pass
+
+    db.delete(db_analysis)
+    db.commit()
+    return {"message": "Analysis deleted"}
+
 @app.get("/")
 def read_root():
     return {"message": "API is running. Access /static/index.html for the UI."}
@@ -197,3 +229,7 @@ def read_root():
 @app.get("/design")
 def read_design():
     return FileResponse("static/design.html")
+
+@app.get("/admin")
+def read_admin():
+    return FileResponse("static/admin.html")

@@ -90,7 +90,7 @@ body {
 }
 
 .sidebar.collapsed .sidebar-toggle {
-    transform: rotate(360deg);
+    transform: rotate(180deg);
 }
 
 .sidebar.collapsed .nav-menu,
@@ -866,13 +866,10 @@ body {
 
 
 
-.btn-delete-folder {
+.btn-delete-folder,
+.btn-edit-folder {
     position: absolute;
     top: 12px;
-    right: 12px;
-    background: rgba(255, 77, 77, 0.1);
-    color: #ff4d4d;
-    border: none;
     width: 32px;
     height: 32px;
     border-radius: 8px;
@@ -882,18 +879,38 @@ body {
     cursor: pointer;
     opacity: 0;
     transition: var(--transition);
+    border: none;
 }
 
-.folder-card:hover .btn-delete-folder {
+.btn-delete-folder {
+    right: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    color: var(--danger);
+}
+
+.btn-edit-folder {
+    right: 52px;
+    background: rgba(119, 178, 255, 0.1);
+    color: var(--primary);
+}
+
+.folder-card:hover .btn-delete-folder,
+.folder-card:hover .btn-edit-folder {
     opacity: 1;
 }
 
 .btn-delete-folder:hover {
-    background: #ff4d4d;
+    background: var(--danger);
     color: white;
 }
 
-.btn-delete-folder svg {
+.btn-edit-folder:hover {
+    background: var(--primary);
+    color: #000;
+}
+
+.btn-delete-folder svg,
+.btn-edit-folder svg {
     width: 18px;
     height: 18px;
 }
@@ -1384,4 +1401,479 @@ button:hover,
 .sidebar-toggle:hover,
 .add-folder-card:hover {
     opacity: 1;
+}
+
+/* --- Folder Details View --- */
+#view-folder-details {
+    max-width: 1200px;
+    margin: 0 auto;
+    width: 100%;
+}
+
+.fd-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.fd-header-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+#fd-back-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    width: 44px;
+    height: 44px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--text-dim);
+}
+
+#fd-back-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+}
+
+#fd-back-btn svg {
+    width: 20px;
+    height: 20px;
+}
+
+.fd-breadcrumbs {
+    font-size: 0.85rem;
+    color: var(--text-dim);
+    margin-bottom: 4px;
+    font-weight: 500;
+}
+
+#fd-breadcrumb-name {
+    color: var(--primary);
+}
+
+.fd-title-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.fd-title-row h2 {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin: 0;
+}
+
+.fd-samples-badge {
+    background: rgba(92, 234, 219, 0.15);
+    color: var(--primary);
+    padding: 4px 12px;
+    border-radius: 6px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.fd-header-right {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.fd-search-box {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+
+.fd-search-box svg {
+    position: absolute;
+    left: 12px;
+    width: 18px;
+    height: 18px;
+    color: var(--text-dim);
+}
+
+.fd-search-box input {
+    background: rgba(0, 0, 0, 0.2);
+    border: 1px solid var(--card-border);
+    border-radius: 10px;
+    padding: 10px 16px 10px 40px;
+    color: white;
+    width: 250px;
+    font-family: inherit;
+    font-size: 0.9rem;
+    transition: var(--transition);
+}
+
+.fd-search-box input:focus {
+    border-color: var(--primary);
+    outline: none;
+    width: 280px;
+}
+
+.fd-controls-bar {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 12px 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.fd-tabs {
+    display: flex;
+    gap: 8px;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px;
+    border-radius: 12px;
+}
+
+.fd-tab {
+    background: transparent;
+    border: none;
+    color: var(--text-dim);
+    padding: 8px 16px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: var(--transition);
+}
+
+.fd-tab svg {
+    width: 18px;
+    height: 18px;
+}
+
+.fd-tab:hover {
+    color: white;
+}
+
+.fd-tab.active {
+    background: var(--primary);
+    color: #0f171e;
+    box-shadow: 0 4px 10px rgba(92, 234, 219, 0.2);
+}
+
+.fd-sort-container {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.fd-sort-label {
+    color: var(--text-dim);
+    font-size: 0.85rem;
+}
+
+.fd-sort-select {
+    background: transparent;
+    border: none;
+    color: white;
+    font-weight: 500;
+    font-family: inherit;
+    font-size: 0.9rem;
+    cursor: pointer;
+    outline: none;
+}
+
+.fd-sort-select option {
+    background: var(--sidebar-bg);
+    color: white;
+}
+
+.fd-gallery-container {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 20px;
+    padding: 30px;
+}
+
+.fd-gallery-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.fd-gallery-header h3 {
+    font-size: 1.2rem;
+    font-weight: 600;
+}
+
+.fd-view-toggles {
+    display: flex;
+    gap: 8px;
+}
+
+.fd-view-toggles .btn-icon {
+    background: rgba(0, 0, 0, 0.2);
+    width: 36px;
+    height: 36px;
+}
+
+.fd-view-toggles .btn-icon.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: var(--primary);
+}
+
+.fd-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.fd-item-card {
+    position: relative;
+    border-radius: 16px;
+    overflow: hidden;
+    aspect-ratio: 16/10;
+    background: #000;
+    cursor: pointer;
+    border: 1px solid var(--card-border);
+    transition: var(--transition);
+}
+
+.fd-item-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    opacity: 0.8;
+    transition: var(--transition);
+}
+
+.fd-item-card:hover {
+    border-color: var(--primary);
+    transform: scale(1.02);
+}
+
+.fd-item-card:hover img {
+    opacity: 1;
+}
+
+.fd-item-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: center;
+    padding: 20px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.fd-item-card:hover .fd-item-overlay {
+    opacity: 1;
+}
+
+.fd-item-title {
+    font-weight: 600;
+    margin-bottom: 12px;
+    color: white;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.fd-item-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.fd-item-btn {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: none;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    backdrop-filter: blur(4px);
+    transition: var(--transition);
+}
+
+.fd-item-btn svg {
+    width: 16px;
+    height: 16px;
+}
+
+.fd-item-btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
+}
+
+.fd-item-btn.btn-danger:hover {
+    background: var(--danger);
+}
+
+/* --- Amostras List View --- */
+.fd-amostras-container {
+    padding: 10px 0;
+}
+
+.fd-section-title {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.fd-amostras-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.fd-amostra-row {
+    display: flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--card-border);
+    border-radius: 16px;
+    padding: 20px;
+    gap: 20px;
+    cursor: pointer;
+    transition: var(--transition);
+}
+
+.fd-amostra-row:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: var(--primary);
+    transform: translateY(-2px);
+}
+
+.fd-amostra-icon {
+    width: 52px;
+    height: 52px;
+    background: rgba(92, 234, 219, 0.1);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--primary);
+    flex-shrink: 0;
+}
+
+.fd-amostra-icon svg {
+    width: 24px;
+    height: 24px;
+}
+
+.fd-amostra-details {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.fd-amostra-title {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: white;
+}
+
+.fd-amostra-meta {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+}
+
+.fd-meta-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fd-meta-item svg {
+    width: 14px;
+    height: 14px;
+}
+
+/* --- Multi-Delete UI --- */
+#btn-multi-delete.active-danger {
+    background: rgba(239, 68, 68, 0.2);
+    color: var(--danger);
+    border: 1px solid var(--danger);
+}
+
+.fd-item-card.selected-for-delete {
+    transform: scale(0.98);
+}
+
+/* --- Checkmark UI --- */
+.fd-item-checkbox {
+    position: absolute;
+    top: 12px;
+    left: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: 2px solid rgba(255, 255, 255, 0.8);
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: var(--transition);
+    z-index: 10;
+    cursor: pointer;
+}
+
+.fd-item-checkbox svg {
+    width: 14px;
+    height: 14px;
+    color: transparent;
+    transition: var(--transition);
+}
+
+.fd-item-card.selected-for-delete .fd-item-checkbox {
+    background: #77b2ff;
+    border-color: #77b2ff;
+}
+
+.fd-item-card.selected-for-delete .fd-item-checkbox svg {
+    color: white;
+}
+
+/* Amostras Checkbox */
+.fd-amostra-checkbox {
+    width: 24px;
+    height: 24px;
+    border-radius: 6px;
+    border: 2px solid rgba(159, 180, 248, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-right: 12px;
+    transition: var(--transition);
+    cursor: pointer;
+}
+
+.fd-amostra-checkbox svg {
+    width: 14px;
+    height: 14px;
+    color: transparent;
+}
+
+.fd-amostra-row.selected-for-delete .fd-amostra-checkbox {
+    background: #77b2ff;
+    border-color: #77b2ff;
+}
+
+.fd-amostra-row.selected-for-delete .fd-amostra-checkbox svg {
+    color: white;
 }
