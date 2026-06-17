@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 import base64
 from typing import List
-from fastapi import FastAPI, Depends, UploadFile, File, HTTPException, Form
+from fastapi import FastAPI, Depends, UploadFile, File, HTTPException, Form, WebSocket, WebSocketDisconnect
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
@@ -22,6 +22,11 @@ app = FastAPI(title="YOLO Inference Manager")
 os.makedirs("static", exist_ok=True)
 os.makedirs(os.path.join("static", "uploads"), exist_ok=True)
 app.mount("/static", StaticFiles(directory="static"), name="static")
+
+# Ensure guardiao directory exists and mount it
+os.makedirs("guardiao", exist_ok=True)
+os.makedirs(os.path.join("guardiao", "uploads"), exist_ok=True)
+app.mount("/guardiao", StaticFiles(directory="guardiao", html=True), name="guardiao")
 
 # Dependency
 def get_db():
@@ -161,6 +166,61 @@ async def analyze_image(
         "image": image_url,
         "metadata": metadata
     }
+
+@app.websocket("/ws/analyze/{model_db_id}")
+async def websocket_analyze(websocket: WebSocket, model_db_id: int, db: Session = Depends(get_db)):
+    await websocket.accept()
+    
+    # 1. Get model from DB
+    db_model_config = db.query(database.ModelConfig).filter(database.ModelConfig.id == model_db_id).first()
+    if not db_model_config:
+        await websocket.close(code=1008, reason="Model config not found")
+        return
+
+    # 2. Load YOLO model
+    try:
+        yolo_model = get_model(model_id=db_model_config.model_id, api_key=db_model_config.api_key)
+    except Exception as e:
+        await websocket.close(code=1011, reason=f"Inference error: {str(e)}")
+        return
+
+    box_annotator = sv.BoxAnnotator()
+    label_annotator = sv.LabelAnnotator()
+
+    try:
+        while True:
+            data = await websocket.receive_text()
+            # data is base64 string
+            if "," in data:
+                header, encoded = data.split(",", 1)
+            else:
+                encoded = data
+                
+            nparr = np.frombuffer(base64.b64decode(encoded), np.uint8)
+            image = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
+            if image is None:
+                continue
+
+            results = yolo_model.infer(image)[0]
+            detections = sv.Detections.from_inference(results)
+
+            labels = [f"{p.class_name} {p.confidence:.2f}" for p in results.predictions]
+            annotated_image = box_annotator.annotate(scene=image.copy(), detections=detections)
+            annotated_image = label_annotator.annotate(scene=annotated_image, detections=detections, labels=labels)
+
+            _, buffer = cv2.imencode('.jpg', annotated_image)
+            base64_image = base64.b64encode(buffer).decode('utf-8')
+            
+            await websocket.send_text(f"data:image/jpeg;base64,{base64_image}")
+    except WebSocketDisconnect:
+        print("WebSocket disconnected")
+    except Exception as e:
+        print(f"WebSocket error: {str(e)}")
+        try:
+            await websocket.close(code=1011)
+        except:
+            pass
 
 @app.get("/folders/{folder_id}/metrics")
 def get_folder_metrics(folder_id: int, db: Session = Depends(get_db)):

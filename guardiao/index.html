@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Guardiao AI | Classificação</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body class="dark-theme">
+    <div class="app-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="brand">
+                <div class="logo-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M6 18h8" />
+                        <path d="M3 22h18" />
+                        <path d="M14 22a7 7 0 1 0 0-14h-1" />
+                        <path d="M9 14h2" />
+                        <path d="M9 12a2 2 0 0 1-2-2V6h6v4a2 2 0 0 1-2 2Z" />
+                        <path d="M12 6V3a1 1 0 0 0-1-1H9a1 1 0 0 0-1 1v3" />
+                    </svg>
+                </div>
+                <div class="brand-text">
+                    <span class="brand-name">Guardiao AI</span>
+                    <span class="brand-sub">CLASSIFICAÇÃO</span>
+                </div>
+                <button id="sidebar-toggle" class="sidebar-toggle">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="15 18 9 12 15 6" />
+                    </svg>
+                </button>
+            </div>
+
+            <nav class="nav-menu">
+                <button class="nav-item active" data-view="analysis">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M12 5v14M5 12h14" />
+                    </svg>
+                    <span>Nova Análise</span>
+                </button>
+                <button class="nav-item" data-view="folders">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z" />
+                    </svg>
+                    <span>Pastas</span>
+                </button>
+                <button class="nav-item" data-view="metrics">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M18 20V10M12 20V4M6 20v-6" />
+                    </svg>
+                    <span>Métricas</span>
+                </button>
+
+            </nav>
+
+
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Nova Análise View -->
+            <section id="view-analysis" class="view">
+                <header class="view-header">
+                    <h2 id="analysis-view-title">Configure a nova análise</h2>
+                    <p id="analysis-view-desc">ajuste os parâmetros abaixo e anexe as amostras para que a I.A. analise e
+                        classifique</p>
+                </header>
+
+                <div id="analysis-config-container">
+                    <div class="analysis-card">
+                        <div class="card-grid">
+                            <div class="form-inputs">
+                                <div class="input-group">
+                                    <label>Identificação da Análise</label>
+                                    <input type="text" id="analysis-name" placeholder="Ex: André - 23/11/26">
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Pasta</label>
+                                    <div class="folder-selector-container">
+                                        <select id="analysis-folder-select" class="folder-select">
+                                            <option value="">Selecione uma pasta</option>
+                                        </select>
+                                        <button id="open-new-folder-modal" class="btn-icon">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <path d="M12 5v14M5 12h14" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div class="input-group">
+                                    <label>Modelo YOLO</label>
+                                    <select id="active-model-select">
+                                        <option value="">Selecione um modelo</option>
+                                    </select>
+                                </div>
+
+                                <div class="analysis-actions" id="analysis-actions-container">
+                                    <button id="start-analysis-btn" class="btn-primary">
+                                        Iniciar análise <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                            stroke-width="2">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div class="upload-section" style="display: flex; flex-direction: column;">
+                                <div class="mode-segmented-control">
+                                    <button id="mode-file-btn" class="segment-btn active">Selecionar Imagem</button>
+                                    <button id="mode-camera-btn" class="segment-btn">Câmera</button>
+                                </div>
+                                <div class="upload-area-wrapper" style="flex: 1; display: flex; flex-direction: column;">
+                                    <div class="upload-zone" id="drop-area" style="flex: 1;">
+                                        <input type="file" id="image-input" accept="image/*" multiple hidden>
+                                        <div class="upload-placeholder" id="upload-placeholder">
+                                            <div class="upload-icon">
+                                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                                                    <polyline points="17 8 12 3 7 8" />
+                                                    <line x1="12" y1="3" x2="12" y2="15" />
+                                                </svg>
+                                            </div>
+                                            <p><strong>arraste e solte</strong></p>
+                                            <p>ou <span>clique</span> para selecionar arquivos</p>
+                                        </div>
+                                        <div class="preview-container hidden" id="preview-container">
+                                            <img id="image-preview">
+                                            <div id="file-badge" class="file-badge hidden"></div>
+                                            <button id="remove-image" class="btn-remove">×</button>
+                                        </div>
+                                    </div>
+                                    <div class="camera-zone hidden" id="camera-area" style="flex: 1;">
+                                        <div class="camera-video-wrapper">
+                                            <video id="camera-video" autoplay playsinline></video>
+                                            <img id="camera-result-preview" class="hidden" src="" />
+                                        </div>
+                                        <button id="capture-btn" class="btn-primary" type="button">
+                                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                                <circle cx="12" cy="12" r="10" />
+                                                <circle cx="12" cy="12" r="3" />
+                                            </svg>
+                                            Capturar Foto
+                                        </button>
+                                        <canvas id="camera-canvas" hidden></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Ready State (Hidden by default) -->
+                <div id="analysis-ready-container" class="hidden">
+                    <div class="analysis-card ready-state-card">
+                        <div class="card-grid ready-card-grid">
+                            <!-- Left panel (Properties) -->
+                            <div class="ready-properties-panel">
+                                <h3>Propriedades</h3>
+                                <div class="prop-list">
+                                    <div class="prop-group">
+                                        <label>Identificação da Análise</label>
+                                        <span id="ready-prop-name">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Pasta</label>
+                                        <span id="ready-prop-folder">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Modelo de I.A.</label>
+                                        <span id="ready-prop-model">-</span>
+                                    </div>
+                                    <div class="prop-group">
+                                        <label>Data</label>
+                                        <span id="ready-prop-date">-</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Right panel (Upload preview zone) -->
+                            <div class="upload-zone ready-preview-zone">
+                                <div class="ready-zone-header">Upload de Amostras</div>
+
+                                <div class="ready-bg-grid" id="ready-bg-grid">
+                                    <!-- blurred images will be injected here -->
+                                </div>
+
+                                <div class="ready-overlay-content">
+                                    <h3>Clique para ver os resultados</h3>
+                                    <button id="ready-view-results" class="btn-primary btn-success ready-btn-pulse">
+                                        Ver Resultados <svg width="20" height="20" viewBox="0 0 24 24" fill="none"
+                                            stroke="currentColor" stroke-width="2">
+                                            <circle cx="11" cy="11" r="8" />
+                                            <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div id="results-container" class="results-container hidden">
+                    <!-- Cards de resultados serão injetados aqui -->
+                </div>
+            </section>
+
+            <!-- Pastas View -->
+            <section id="view-folders" class="view hidden">
+                <header class="view-header">
+                    <h2>Gerencie suas Pastas</h2>
+                    <p>crie, altere ou exclua seus agrupamentos</p>
+                </header>
+
+                <div class="folders-grid" id="folders-container">
+                    <!-- Cards de pastas injetados aqui -->
+                    <div class="add-folder-card" id="add-folder-btn-card">
+                        <div class="btn-create">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M12 5v14M5 12h14" />
+                            </svg>
+                        </div>
+                        <span>Criar Nova Pasta</span>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Folder Details View -->
+            <section id="view-folder-details" class="view hidden">
+                <header class="fd-header">
+                    <div class="fd-header-left">
+                        <button id="fd-back-btn" class="btn-icon">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="19" y1="12" x2="5" y2="12"></line>
+                                <polyline points="12 19 5 12 12 5"></polyline>
+                            </svg>
+                        </button>
+                        <div class="fd-title-container">
+                            <div class="fd-breadcrumbs">
+                                Pastas &rsaquo; <span id="fd-breadcrumb-name">Nome da Pasta</span>
+                            </div>
+                            <div class="fd-title-row">
+                                <h2 id="fd-title-name">Nome da Pasta</h2>
+                                <span class="fd-samples-badge" id="fd-samples-count">0 AMOSTRAS</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="fd-header-right">
+                        <div class="fd-search-box">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8" />
+                                <line x1="21" y1="21" x2="16.65" y2="16.65" />
+                            </svg>
+                            <input type="text" id="fd-search-input" placeholder="Filtrar nesta pasta...">
+                        </div>
+                        <button class="btn-primary" id="fd-add-samples-btn" style="margin-top: 0; padding: 10px 20px; font-size: 0.95rem; border-radius: 8px;">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="width: 18px; height: 18px;">
+                                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                                <polyline points="14 2 14 8 20 8"></polyline>
+                                <line x1="12" y1="18" x2="12" y2="12"></line>
+                                <line x1="9" y1="15" x2="15" y2="15"></line>
+                            </svg>
+                            Adicionar Amostras
+                        </button>
+                    </div>
+                </header>
+
+                <div class="fd-controls-bar">
+                    <div class="fd-tabs" id="fd-tabs">
+                        <button class="fd-tab active" data-tab="amostras">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="8" y1="6" x2="21" y2="6"></line>
+                                <line x1="8" y1="12" x2="21" y2="12"></line>
+                                <line x1="8" y1="18" x2="21" y2="18"></line>
+                                <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                            </svg>
+                            Amostras
+                        </button>
+                        <button class="fd-tab" data-tab="imagens">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                <polyline points="21 15 16 10 5 21"></polyline>
+                            </svg>
+                            Imagens
+                        </button>
+                    </div>
+                    <div class="fd-sort-container">
+                        <span class="fd-sort-label">Ordenar por:</span>
+                        <select class="fd-sort-select" id="fd-sort-select">
+                            <option value="date-desc">Data de Inclusão</option>
+                            <option value="name-asc">Nome</option>
+                        </select>
+                        <button class="btn-icon" id="btn-multi-delete" title="Excluir Múltiplas Imagens">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Amostras View -->
+                <div class="fd-amostras-container" id="fd-amostras-container">
+                    <h3 class="fd-section-title">Amostras Registradas</h3>
+                    <div class="fd-amostras-list" id="fd-amostras-list">
+                        <!-- amostras will be injected here -->
+                    </div>
+                </div>
+
+                <!-- Imagens View -->
+                <div class="fd-gallery-container hidden" id="fd-gallery-container">
+                    <div class="fd-gallery-header">
+                        <h3>Galeria de Imagens</h3>
+                    </div>
+                    
+                    <div class="fd-gallery-grid" id="fd-gallery-grid">
+                        <!-- image cards injected here by JS -->
+                    </div>
+                </div>
+            </section>
+
+            <!-- Metrics View -->
+            <section id="view-metrics" class="view hidden">
+                <header class="view-header">
+                    <h2>Métricas e Estatísticas</h2>
+                    <p>confira os dados de desempenho e consumo</p>
+                </header>
+
+                <div class="metrics-config">
+                    <div class="input-group">
+                        <label>Selecione a Pasta</label>
+                        <select id="metrics-folder-select" class="folder-select">
+                            <option value="">Selecione uma pasta</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div id="metrics-dashboard" class="metrics-dashboard hidden">
+                    <div class="metrics-grid">
+                        <div class="metric-card">
+                            <div class="metric-icon">📸</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total de Imagens</span>
+                                <span id="m-total-images" class="metric-value">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">🎯</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Total de Detecções</span>
+                                <span id="m-total-det" class="metric-value">0</span>
+                            </div>
+                        </div>
+                        <div class="metric-card">
+                            <div class="metric-icon">💎</div>
+                            <div class="metric-info">
+                                <span class="metric-label">Confiança Média</span>
+                                <span id="m-avg-conf" class="metric-value">0%</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="charts-card">
+                        <h3>Distribuição de Classes</h3>
+                        <div id="m-distribution-container" class="dist-container">
+                            <!-- Barras de progresso serão injetadas aqui -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- Modais -->
+    <div id="new-folder-modal" class="modal hidden">
+        <div class="modal-content">
+            <h3>Nova Pasta</h3>
+            <input type="text" id="new-folder-name" placeholder="Nome da pasta">
+            <div class="modal-actions">
+                <button id="cancel-folder-btn" class="btn-secondary">Cancelar</button>
+                <button id="save-folder-btn" class="btn-primary">Criar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal de Lightbox Redesenhado (Split View) -->
+    <div id="lightbox-modal" class="lightbox-modal hidden">
+        <div class="lightbox-split">
+            <!-- Lateral esquerda: Informações -->
+            <aside class="lightbox-sidebar">
+                <div class="lightbox-header">
+                    <span class="img-counter" id="lb-counter">1 de 1</span>
+                    <button class="lightbox-close">×</button>
+                </div>
+
+                <div class="stats-group">
+                    <label>Modelo Utilizado</label>
+                    <div id="lb-model-name" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-group">
+                    <label>Confiança Média</label>
+                    <div id="lb-confidence" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-group">
+                    <label>Total de Detecções</label>
+                    <div id="lb-total" class="stat-value">-</div>
+                </div>
+
+                <div class="stats-divider"></div>
+
+                <div class="stats-group">
+                    <label>Distribuição de Classes</label>
+                    <div id="lb-classes-list" class="classes-list">
+                        <!-- Itens como % serão injetados aqui -->
+                    </div>
+                </div>
+
+                <div class="lightbox-nav">
+                    <button id="lb-prev" class="btn-nav">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="15 18 9 12 15 6" />
+                        </svg>
+                    </button>
+                    <button id="lb-next" class="btn-nav">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polyline points="9 18 15 12 9 6" />
+                        </svg>
+                    </button>
+                </div>
+            </aside>
+
+            <!-- Área principal: Imagem -->
+            <div class="lightbox-main">
+                <div class="img-zoom-container">
+                    <img id="lightbox-img" src="" alt="Zoom da análise">
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+
+</html>
